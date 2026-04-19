@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Karakter Testi</title>
+</head>
+
+<body style="text-align:center; font-family:Arial; background:#f5f5f5;">
+
+<h2>Cüzdanımı kim çaldı? </h2>
+
+<div id="options"></div>
+
+<script>
+
+let characters = [
+  {name:"Sarı", img:"sarısteve.png"},
+  {name:"Turuncu", img:"turuncusteve.png"},
+  {name:"Kırmızı", img:"kırmızısteve.png"},
+  {name:"Yeşil", img:"yesilsteve.png"},
+  {name:"Mavi", img:"mavisteve.png"},
+  {name:"Mor", img:"morsteve.png"},
+  {name:"Siyah", img:"siyahsteve.png"},
+  {name:"Beyaz", img:"beyazsteve.png"}
+];
+
+let selections = [];
+let startTime = Date.now();
+
+function show() {
+  let box = document.getElementById("options");
+  box.innerHTML = "";
+
+  characters.forEach(c => {
+
+    let div = document.createElement("div");
+    div.style.display = "inline-block";
+    div.style.margin = "10px";
+    div.style.cursor = "pointer";
+
+    div.innerHTML = `
+      <img src="${c.img}" width="140" height="140" style="border-radius:10px;"><br>
+      <b>${c.name}</b>
+    `;
+
+    div.onclick = () => {
+      selections.push(c.name);
+      characters = characters.filter(x => x.name !== c.name);
+
+      if (characters.length === 1) {
+        showResult(characters[0]);
+      } else {
+        show();
+      }
+    };
+
+    box.appendChild(div);
+  });
+}
+
+function showResult(finalChar) {
+
+  let duration = Date.now() - startTime;
+
+  document.body.innerHTML = `
+    <h1>Son Karakter</h1>
+    <img src="${finalChar.img}" width="200" style="border-radius:12px;">
+    <h2>${finalChar.name}</h2>
+    <p>Seçim süresi: ${Math.round(duration/1000)} saniye</p>
+  `;
+
+  sendData(finalChar.name, duration);
+}
+
+function sendData(final, duration) {
+
+  const base = "https://script.google.com/macros/s/AKfycbyetiBsmzgW6ps-EB6SFLnYRjYGlCED0AmMJPx4rbqG9S6GVZUp7wxhn037g-o2o4wzdg/exec";
+
+  const url = base +
+    "?selections=" + encodeURIComponent(selections.join(" → ")) +
+    "&final=" + encodeURIComponent(final) +
+    "&duration=" + duration;
+
+  fetch(url)
+    .then(() => console.log("VERİ GÖNDERİLDİ"))
+    .catch(() => console.log("HATA"));
+}
+
+show();
+
+</script>
+
+</body>
+</html>
